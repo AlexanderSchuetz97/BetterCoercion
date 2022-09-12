@@ -19,26 +19,31 @@
 //
 package io.github.alexanderschuetz97.bettercoercion.coercion;
 
-import io.github.alexanderschuetz97.bettercoercion.api.BiCoercion;
+import io.github.alexanderschuetz97.bettercoercion.api.LuaToJavaCoercion;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Map;
 
-public class VoidBiCoercion implements BiCoercion<Object> {
-    @Override
-    public LuaValue coerce2L(Object value, Map<Class<?>, Type[]> types) {
-        return LuaValue.NIL;
-    }
+public class DateL2JCoercion implements LuaToJavaCoercion<Date> {
 
     @Override
     public int score(LuaValue value) {
-        if (value.isnil()) {
+        if (value.isuserdata(Date.class)) {
             return COERCION_INSTANCE;
         }
-        return COERCION_CONVERSION;
 
+        if (value.isnumber()) {
+            if (value.islong()) {
+                return COERCION_CONVERSION;
+            }
+
+            return COERCION_CONVERSION_LOSS_OF_PRECISION;
+        }
+
+        return COERCION_IMPOSSIBLE;
     }
 
     @Override
@@ -46,19 +51,21 @@ public class VoidBiCoercion implements BiCoercion<Object> {
         int score = score(value);
         return score < 0 ? score : score+chain;
     }
-
     @Override
-    public Object coerce2J(LuaValue value, Map<Class<?>, Type[]> types) {
-        return null;
+    public Date coerce2J(LuaValue value, Map<Class<?>, Type[]> genericTypes) {
+        if (value.isuserdata(Date.class)) {
+            return (Date) value.touserdata(Date.class);
+        }
+
+        if (value.isnumber()) {
+            return new Date(value.checklong());
+        }
+
+        throw new LuaError("bad argument: java.util.Date expected, got " + value.typename());
     }
 
     @Override
-    public Varargs coerce2V(Object value, Map<Class<?>, Type[]> types) {
-        return LuaValue.NONE;
-    }
-
-    @Override
-    public Class getCoercedClass() {
-        return Void.class;
+    public Class<Date> getCoercedClass() {
+        return Date.class;
     }
 }

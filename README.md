@@ -5,7 +5,7 @@ BetterCoercion is a library for LuaJ that improves the coercion mechanics of Lua
 ## License
 
 BetterCoercion is released under the GNU Lesser General Public License Version 3. <br>A copy of the GNU Lesser General Public
-License Version 3 can be found in the COPYING file.<br>
+License Version 3 can be found in the COPYING & COPYING.LESSER files.<br>
 
 ## Dependency
 Maven:
@@ -18,7 +18,7 @@ Maven:
 ````
 
 ## Features
-### From  Lua:
+### From Lua:
 
 | routine                                                  | return value | description                                                                                                                                                                                                                                                                                                                                                                                                |
 |----------------------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -68,7 +68,7 @@ Java  Collections, Java Iterators  and Java  Maps can be iterated over by using 
 In addition to that Collections and Maps overload the lua '#' operator allowing for faster access to their size() methods.
 
 #### BigDecimal and BigInteger
-Each userdata from BigDecimal or BigInteger has all the mathematical and  comparison operators overloaded.
+Each userdata from BigDecimal or BigInteger has all the mathematical and comparison operators overloaded.
 You dont need to (but still can!) do: 
 ````
 bd = bd:add(bd2)
@@ -77,14 +77,14 @@ Now you have the option to do
 ````
 bd = bd + bd2
 ````
-This  should allow you to simplify code that deals with BigDecimals and BigIntegers
+This should allow you to simplify code that deals with BigDecimals and BigIntegers
 
 
 ### From Java:
 - Register custom coercion/conversion handlers for your own types.
-- Implement Modules/Services/Beans  in  Java for use by Lua without the requirement to extend from LuaValue or wrap every call into a VarArgFunction
+- Implement Modules/Services/Beans in Java for use by Lua without the requirement to extend from LuaValue or wrap every call into a VarArgFunction
 - Coerce byte[] and char[] to actual mutable arrays instead coercing them to LuaString
-- Support for coercing LuaValue/Varargs internal types. You can now  freely mix and match in between letting userdata take care of all, some and no coercion even within the same class.
+- Support for coercing LuaValue/Varargs internal types. You can now freely mix and match in between letting userdata take care of all, some and no coercion even within the same class.
 
 ## Examples
 

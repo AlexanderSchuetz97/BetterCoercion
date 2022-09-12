@@ -18,12 +18,7 @@ import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BetterCoercionTest {
@@ -479,5 +474,18 @@ public class BetterCoercionTest {
         void test();
     }
 
+    @Test
+    public void testDate() {
+        long t = System.currentTimeMillis();
+        Date date = LuaType.coercion().coerce(LuaType.valueOf(t), Date.class);
+        Assert.assertEquals(t, date.getTime());
 
+
+    }
+
+    @Test
+    public void testLongPrecision() {
+        Assert.assertEquals(9007199254740993L, LuaType.valueOf(9007199254740993L).checklong());
+        Assert.assertEquals(-9007199254740993L, LuaType.valueOf(-9007199254740993L).checklong());
+    }
 }

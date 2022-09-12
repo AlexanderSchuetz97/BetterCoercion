@@ -1,12 +1,17 @@
 package io.github.alexanderschuetz97.bettercoercion.coercion.primitives;
 
 import io.github.alexanderschuetz97.bettercoercion.api.BiCoercion;
+import io.github.alexanderschuetz97.bettercoercion.api.LuaCoercion;
+import io.github.alexanderschuetz97.bettercoercion.userdata.number.BigDecimalUserdata;
+import io.github.alexanderschuetz97.bettercoercion.userdata.number.BigIntegerUserdata;
 import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
+import org.luaj.vm2.compiler.LuaC;
 
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.util.Map;
 
 public class LongBiConversion implements BiCoercion<Long> {
@@ -15,7 +20,10 @@ public class LongBiConversion implements BiCoercion<Long> {
     private final Class<Long> clazz;
     private final Long nullValue;
 
-    public LongBiConversion(boolean isPrimitive) {
+    private final LuaCoercion coercion;
+
+    public LongBiConversion(LuaCoercion coercion, boolean isPrimitive) {
+        this.coercion = coercion;
         this.primitive = isPrimitive;
         nullValue = isPrimitive ? Long.valueOf(0) : null;
         clazz = isPrimitive ? long.class : Long.class;
@@ -23,7 +31,21 @@ public class LongBiConversion implements BiCoercion<Long> {
 
     @Override
     public LuaValue coerce2L(Long value, Map<Class<?>, Type[]> types) {
-        return value == null ? LuaValue.NIL : LuaInteger.valueOf(value);
+        return value == null ? LuaValue.NIL : valueOf(value);
+    }
+
+    protected LuaValue valueOf(long l) {
+        //TODO implement a 64 bit LuaInteger?
+        //This here is at least better than nothing but if you fetch 9007199254740991L and add 1 it wont convert it to a BigInteger and you will end up loosing precision
+
+        //Luaj squashes long to a double.
+        //Double can represent every long up until 2^53 since 53 bits of the 64 bit double are used for the whole number part (10 for the exponent and 1 for sign).
+        if (l > 9007199254740992L || l < -9007199254740992L) {
+            return new BigIntegerUserdata(coercion, BigInteger.valueOf(l));
+        }
+
+        //Double or 32-bit integer is sufficient precision
+        return LuaInteger.valueOf(l);
     }
 
     @Override

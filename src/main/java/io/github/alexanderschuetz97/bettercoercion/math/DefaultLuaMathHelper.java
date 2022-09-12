@@ -1,3 +1,22 @@
+//
+// Copyright Alexander Schütz, 2022
+//
+// This file is part of BetterCoercion.
+//
+// BetterCoercion is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BetterCoercion is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// A copy of the GNU Lesser General Public License should be provided
+// in the COPYING & COPYING.LESSER files in top level directory of BetterCoercion.
+// If not, see <https://www.gnu.org/licenses/>.
+//
 package io.github.alexanderschuetz97.bettercoercion.math;
 
 import org.luaj.vm2.LuaError;
@@ -27,7 +46,7 @@ class DefaultLuaMathHelper implements LuaMathHelper {
 
     protected static final int POW_SCALE_PRECISION_MULTIPLICATOR = 2;
     /**
-     * If we go lower then 1 != 1 which would not be ideal...
+     * If we go lower than 1 != 1 which would not be ideal...
      */
     protected static final int MIN_POW_PRECISION = 4;
 
@@ -75,7 +94,7 @@ class DefaultLuaMathHelper implements LuaMathHelper {
         //split into left and right where left.scale()=0 and right < 1
         BigDecimal left = exponentAbs.setScale(0, RoundingMode.DOWN);
         if (MAX_EXPONENT_DECI.compareTo(left) < 0) {
-            throw new ArithmeticException("exponent " + exponent.toString() + " is to big.");
+            throw new ArithmeticException("exponent " + exponent + " is to big.");
         }
 
         //Yes this is just an approximation but what can you do...

@@ -29,8 +29,7 @@ import io.github.alexanderschuetz97.bettercoercion.access.method.specific.LuaVal
 import io.github.alexanderschuetz97.bettercoercion.access.method.specific.LuaValue_MethodAccessor;
 import io.github.alexanderschuetz97.bettercoercion.access.method.specific.Varargs_MethodAccessor;
 import io.github.alexanderschuetz97.bettercoercion.access.method.specific.Void_MethodAccessor;
-import io.github.alexanderschuetz97.bettercoercion.coercion.NumberL2jCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.ObjectL2JCoercion;
+import io.github.alexanderschuetz97.bettercoercion.coercion.*;
 import io.github.alexanderschuetz97.bettercoercion.coercion.array.CharArrayBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.array.DoubleArrayBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.array.FloatArrayBiCoercion;
@@ -48,13 +47,7 @@ import io.github.alexanderschuetz97.bettercoercion.coercion.luavalues.LuaStringB
 import io.github.alexanderschuetz97.bettercoercion.coercion.luavalues.LuaTableBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.luavalues.VarargsBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.array.GenericArrayBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.BigDecimalBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.BigIntegerBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.ClassBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.luavalues.LuaValueBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.StringBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.UserdataBiCoercion;
-import io.github.alexanderschuetz97.bettercoercion.coercion.VoidBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.primitives.BooleanBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.array.ByteArrayBiCoercion;
 import io.github.alexanderschuetz97.bettercoercion.coercion.primitives.ByteBiCoercion;
@@ -105,8 +98,6 @@ public class LuaCoercion {
     protected static final FloatBiCoercion FLOAT_COERCION = new FloatBiCoercion(false);
     protected static final IntBiCoercion INT_COERCION_P = new IntBiCoercion(true);
     protected static final IntBiCoercion INT_COERCION = new IntBiCoercion(false);
-    protected static final LongBiConversion LONG_COERCION_P = new LongBiConversion(true);
-    protected static final LongBiConversion LONG_COERCION = new LongBiConversion(false);
     protected static final ShortBiCoercion SHORT_COERCION_P = new ShortBiCoercion(true);
     protected static final ShortBiCoercion SHORT_COERCION = new ShortBiCoercion(false);
     protected static final LuaIntegerBiCoercion LUA_INTEGER_COERCION = new LuaIntegerBiCoercion();
@@ -142,8 +133,8 @@ public class LuaCoercion {
         addBiCoercion(FLOAT_COERCION);
         addBiCoercion(INT_COERCION_P);
         addBiCoercion(INT_COERCION);
-        addBiCoercion(LONG_COERCION_P);
-        addBiCoercion(LONG_COERCION);
+        addBiCoercion(new LongBiConversion(this, true));
+        addBiCoercion(new LongBiConversion(this, false));
         addBiCoercion(SHORT_COERCION_P);
         addBiCoercion(SHORT_COERCION);
         addL2JCoercion(NUMBER_COERCION);
@@ -173,6 +164,7 @@ public class LuaCoercion {
         addBiCoercion(new IterableBiCoercion(this));
         addBiCoercion(new MapBiCoercion(this));
 
+        addL2JCoercion(new DateL2JCoercion());
     }
 
     protected void addInheritanceMapping() {
