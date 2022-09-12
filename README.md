@@ -142,7 +142,7 @@ public interface MyServiceImpl implements MyService {
         return result;
     }
 
-    void doSpecial(Varargs args)  {
+    public void doSpecial(Varargs args)  {
         System.out.println(args.arg1());
     }
 }
