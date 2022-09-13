@@ -371,6 +371,10 @@ public class LuaCoercion {
             return value.touserdata();
         }
 
+        if (value.isboolean()) {
+            return value.checkboolean();
+        }
+
         if (value.isinttype()) {
             return value.checkint();
         }

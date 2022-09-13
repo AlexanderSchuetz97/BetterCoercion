@@ -488,4 +488,9 @@ public class BetterCoercionTest {
         Assert.assertEquals(9007199254740993L, LuaType.valueOf(9007199254740993L).checklong());
         Assert.assertEquals(-9007199254740993L, LuaType.valueOf(-9007199254740993L).checklong());
     }
+
+    @Test
+    public void testBoolean() {
+        Assert.assertTrue(LuaType.coercion().coerce(LuaValue.TRUE) instanceof Boolean);
+    }
 }

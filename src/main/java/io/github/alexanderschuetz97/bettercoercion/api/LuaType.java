@@ -65,7 +65,7 @@ public class LuaType {
      * This method does not implement any "Multi Threading" semantics as it is intended to be only called once
      * if at all during startup of the application.
      */
-    public void setCoercionProvider(CoercionProvider provider) {
+    public static void setCoercionProvider(CoercionProvider provider) {
         PROVIDER = Objects.requireNonNull(provider);
     }
 
