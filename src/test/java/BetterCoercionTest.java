@@ -493,4 +493,44 @@ public class BetterCoercionTest {
     public void testBoolean() {
         Assert.assertTrue(LuaType.coercion().coerce(LuaValue.TRUE) instanceof Boolean);
     }
+
+    @Test
+    public void testNoReflect() {
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT2()).get("?f?x").isnil());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT2()).get("x").isint());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT3()).get("?f?x").isint());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT3()).get("x").isint());
+
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT2()).get("?m?blah").isnil());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT2()).get("blah").isfunction());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT3()).get("?m?blah").isfunction());
+        Assert.assertTrue(LuaType.valueOf(new NoReflectT3()).get("blah").isfunction());
+    }
+
+    public static class NoReflectT1 {
+
+        public int x = 2;
+        public void blah() {
+
+        }
+    }
+
+    @LuaBinding(reflect = false)
+    public static class NoReflectT2 extends NoReflectT1 {
+
+        protected int y = 2;
+
+        protected void blub() {
+
+        }
+    }
+
+    public static class NoReflectT3 extends NoReflectT1 {
+
+        protected int y = 2;
+
+        protected void blub() {
+
+        }
+    }
 }

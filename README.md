@@ -13,7 +13,7 @@ Maven:
 <dependency>
   <groupId>io.github.alexanderschuetz97</groupId>
   <artifactId>BetterCoercion</artifactId>
-  <version>0.1</version>
+  <version>0.1.2</version>
 </dependency>
 ````
 

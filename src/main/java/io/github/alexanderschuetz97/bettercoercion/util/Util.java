@@ -255,7 +255,7 @@ public class Util {
             }
 
             if (!classScope.visible() || !classScope.reflect()) {
-                continue;
+                break;
             }
 
             for (Field f : aClass.getDeclaredFields()) {
@@ -340,7 +340,7 @@ public class Util {
             }
 
             if (!classScope.visible() || !classScope.reflect()) {
-                continue;
+                break;
             }
 
 
