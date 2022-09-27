@@ -533,4 +533,41 @@ public class BetterCoercionTest {
 
         }
     }
+
+    @Test
+    public void testEnum() {
+        TestEnum x = LuaType.coercion().coerce(LuaValue.valueOf("DEF"), TestEnum.class);
+        Assert.assertEquals(TestEnum.DEF, x);
+        TestEnum x2 = LuaType.coercion().coerce(LuaValue.valueOf("dEf"), TestEnum.class);
+        Assert.assertEquals(TestEnum.DEF, x2);
+        TestEnum2 x3 = LuaType.coercion().coerce(LuaValue.valueOf("DEF"), TestEnum2.class);
+        Assert.assertEquals(TestEnum2.DEF, x3);
+        try {
+            LuaType.coercion().coerce(LuaValue.valueOf("dEf"), TestEnum2.class);
+            Assert.fail("exception expected");
+        } catch (LuaError e) {
+            //EXPECTED
+        }
+
+        EnumT3 t3 = new EnumT3();
+        LuaType.valueOf(t3).set("x", "bC");
+        Assert.assertEquals(TestEnum.BC, t3.x);
+    }
+
+    public static class EnumT3 {
+        public TestEnum x;
+    }
+
+    public enum TestEnum {
+        A,
+        BC,
+        DEF,
+    }
+
+    public enum TestEnum2 {
+        A,
+        a,
+        BC,
+        DEF,
+    }
 }

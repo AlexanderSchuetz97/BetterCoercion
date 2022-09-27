@@ -543,6 +543,10 @@ public class LuaCoercion {
                }
             }
 
+            if (source.isEnum()) {
+                return new EnumBiCoercion(this, source);
+            }
+
             return new UserdataBiCoercion<>(this, source);
         }
 
@@ -570,6 +574,10 @@ public class LuaCoercion {
 
             if (Varargs.class == target) {
                 return (LuaToJavaCoercion) VARARGS_COERCION;
+            }
+
+            if (target.isEnum()) {
+                return new EnumBiCoercion(this, target);
             }
 
             return new UserdataBiCoercion<>(this, target);

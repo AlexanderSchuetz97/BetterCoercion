@@ -79,6 +79,14 @@ bd = bd + bd2
 ````
 This should allow you to simplify code that deals with BigDecimals and BigIntegers
 
+#### Java enums
+For the purpose of calling java methods and setting object fields strings are automatically coerced to the required java enum. This only works
+if the java parameter or field is an enum. Interfaces that are implemented by enums will not work. 
+If all constants in the enum are case-insensitive (There are no 2 constants with the same characters that only differ in upper and lower case)
+then the lua strings can also have any case and will be matched to the appropriate case when determining the java enum the string will be coerced to.
+
+Note: You can still call the methods or set fields with userdata instances of the enum, the ability to do so with a string is just additional.
+This has no effect on returned values from java methods. If a java method returns a enum then the returned value will always be a userdata instance of the enum.
 
 ### From Java:
 - Register custom coercion/conversion handlers for your own types.
