@@ -11,9 +11,9 @@ License Version 3 can be found in the COPYING & COPYING.LESSER files.<br>
 Maven:
 ````
 <dependency>
-  <groupId>io.github.alexanderschuetz97</groupId>
+  <groupId>eu.aschuetz</groupId>
   <artifactId>BetterCoercion</artifactId>
-  <version>0.1.2</version>
+  <version>0.2</version>
 </dependency>
 ````
 
@@ -35,6 +35,7 @@ Maven:
 | `java.bindGenericType(Class, table/Class..., )`          | `userdata`   | Create a new ParameterizedType that can be used to create a Map or Collection with defined generic Type parameters.                                                                                                                                                                                                                                                                                        |
 | `java.bindTableInstance(userdata, [Class]..., )`         | `table`      | Create a table of functions that contains all non static methods of the userdata. Each function is bound to the supplied instance and can be called without the instance as the first parameter. This removes the need of useing the ':' operator. Any provided as 2nd parameter should be interfaces. If any interface  is provided the table will only contain methods found in any of the interfaces.   |
 | `java.bindUserdataInstance(userdata, [Class]..., )`      | `userdata`   | Create a userdata that reveals all non static methods of the userdata as functions. Each function is bound to the supplied instance and can be called without the instance as the first parameter. This removes the need of useing the ':' operator. Any provided as 2nd parameter should be interfaces. If any interface  is provided the table will only contain methods found in any of the interfaces. |
+
 #### Reflection
 Each userdata object created by BetterCoercion can be reflected to allow for fast and painless access to internal variables.
 To  reflect a userdata simply index it by using the a '?' prefix. Example to get the private field "blah" from a userdata would be:
@@ -48,23 +49,59 @@ example to access the field blah declared in the parent of the parent of the use
 value = userdata["???fblah"]
 userdata["???fblah"] = newValue
 ````
-Available tokens after ?:
+Available tokens for Reflection:
 
-| token              | description                             | example                                                                                  |
-|--------------------|-----------------------------------------|------------------------------------------------------------------------------------------|
-| ?f                 | access field                            | `u["?fblah"]`                                                                            |
-| ?m                 | access method                           | `u["?mblub"]`                                                                            |
-| ?m<name>;SIGNATURE | access method by parameter signature    | `u["?mblub;Ljava/lang/String;JI"]` for method `private Object blub(String, long, int);`  |
-| ?c                 | get the class of the userdata           | `u["?c"]`                                                                                |
-| ?ct                | get the type of class in userdata array | `u["?ct"]`                                                                               |
-
+| token              | description                             | example                                                                                 |
+|--------------------|-----------------------------------------|-----------------------------------------------------------------------------------------|
+| ?f(name)           | access field with hiding                | `u["?fblah"] = 1`                                                                       |
+| ?m(name)           | access method                           | `u["?mblub"](u, "some parameter")`                                                      |
+| ?m(name);SIGNATURE | access method by parameter signature    | `u["?mblub;Ljava/lang/String;JI"]` for method `private Object blub(String, long, int);` |
+| ?c                 | get the class of the userdata           | `u["?c"]`                                                                               |
+| ?ct                | get the type of class in userdata array | `u["?ct"]`                                                                              |
+| _(name)            | access field without hiding             | `u._blah = 1`                                                                           |
 
 Each userdata object created by BetterCoercion can  be iterated over as if it were a normal lua table using the 'in pairs(userdata)'
 pattern to get all fields and methods exposed by the userdata.
 
 
+##### Comparison of "_(name)" and "?f(name)"
+They differ in regard to field hiding.
+_(name) can only ever access the first layer of fields. It will never access hidden fields.
+?f can access hidden fields.
+
+Example java classes that have hidden fields:
+```
+class A {
+    private int a = 0;
+
+    public int getAa() {
+        return a;
+    }
+}
+
+class B extends A {
+    private int a = 0; //this hides class A.a
+    
+    public int getBa() {
+        return a;
+    }
+}
+
+```
+
+Given an instance of B: <br>
+
+| lua                    | getBa() | getAa() |
+|------------------------|---------|---------|
+| `instance._a = 1`      | 1       | 0       |
+| `instance["?fa"] = 1`  | 1       | 0       |
+| `instance["?f?a"] = 1` | 0       | 1       |
+
+Note that the _ syntax can only be used if no actual java field or method with the same name exists!
+
+
 #### Collections and Maps
-Java  Collections, Java Iterators  and Java  Maps can be iterated over by using the standard lua 'in pairs(userdata)' pattern.
+Java  Collections, Java Iterators and Java Maps can be iterated over by using the standard lua 'in pairs(userdata)' pattern.
 In addition to that Collections and Maps overload the lua '#' operator allowing for faster access to their size() methods.
 
 #### BigDecimal and BigInteger

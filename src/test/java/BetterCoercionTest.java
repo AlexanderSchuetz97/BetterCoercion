@@ -1,6 +1,10 @@
-import io.github.alexanderschuetz97.bettercoercion.api.LuaBinding;
-import io.github.alexanderschuetz97.bettercoercion.api.LuaCoercion;
-import io.github.alexanderschuetz97.bettercoercion.api.LuaType;
+import eu.aschuetz.bettercoercion.access.Accessor;
+import eu.aschuetz.bettercoercion.access.AccessorRegistry;
+import eu.aschuetz.bettercoercion.access.method.generic.AbstractGenericMethodAccessor;
+import eu.aschuetz.bettercoercion.access.method.specific.AbstractSpecificMethodAccessor;
+import eu.aschuetz.bettercoercion.api.LuaBinding;
+import eu.aschuetz.bettercoercion.api.LuaCoercion;
+import eu.aschuetz.bettercoercion.api.LuaType;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -345,8 +349,6 @@ public class BetterCoercionTest {
 
         }
 
-
-
     }
 
     @Test
@@ -392,8 +394,16 @@ public class BetterCoercionTest {
     public static class TestClass8 {
         public TestClass8L<String, Integer> buup = new TestClass8L<>();
 
-        public TestClass8L<String, Integer> meep() {
+        public TestClass8L<String, Integer> meep(String a, int b) {
             return new TestClass8L<>();
+        }
+
+        public int g(int a) {
+            return 1;
+        }
+
+        public int g(Integer b) {
+            return 0;
         }
 
         public TestClass8L<String, ? extends Number> maap() {
@@ -532,6 +542,43 @@ public class BetterCoercionTest {
         protected void blub() {
 
         }
+    }
+
+    @Test
+    public void testAccReg() {
+        LuaCoercion lc = LuaType.coercion();
+
+        AccessorRegistry accessorRegistry = lc.getAccessorRegistry();
+        Accessor acc = accessorRegistry.getAccessorsFor(TestClass8.class);
+        Assert.assertTrue(acc.getMethods().get(LuaValue.valueOf("meep"))[0] instanceof AbstractGenericMethodAccessor);
+        Assert.assertTrue(acc.getMethods().get(LuaValue.valueOf("maap"))[0] instanceof AbstractSpecificMethodAccessor);
+
+        Assert.assertTrue(acc.getMethods().get(LuaValue.valueOf("g")).length == 2);
+        Assert.assertTrue(acc.getMethods().get(LuaValue.valueOf("g"))[0] instanceof AbstractSpecificMethodAccessor);
+        Assert.assertTrue(acc.getMethods().get(LuaValue.valueOf("g"))[1] instanceof AbstractSpecificMethodAccessor);
+
+        LuaValue lv = lc.coerce(new TestClass8());
+        Assert.assertTrue(lv.method("g", lc.coerce(1)).checkint() == 0);
+        Assert.assertTrue(lv.method("g", lc.coerce(new Integer(1))).checkint() == 0);
+
+        Assert.assertTrue(lv.method("?mg;I", lc.coerce(1)).checkint() == 1);
+        Assert.assertTrue(lv.method("?mg;Ljava/lang/Integer;", lc.coerce(new Integer(1))).checkint() == 0);
+
+
+    }
+
+    @Test
+    public void testFakePojo() {
+        FakePojoB pka = new FakePojoB();
+        LuaValue x = LuaType.coercion().coerce(pka);
+        x.set("_a", "a");
+        x.set("_b", new LuaTable());
+        x.get("_b").set(1, new LuaTable());
+        x.set("_c", 1);
+        Assert.assertEquals(1, pka.getTheC());
+        Assert.assertEquals(0, pka.getC()); //Field should be hidden!
+        Assert.assertTrue(pka.getB().get(0) instanceof FakePojoA);
+
     }
 
     @Test
