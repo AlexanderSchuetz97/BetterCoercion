@@ -8,19 +8,9 @@ import eu.aschuetz.bettercoercion.api.LuaType;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.luaj.vm2.LuaBoolean;
-import org.luaj.vm2.LuaClosure;
-import org.luaj.vm2.LuaDouble;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaInteger;
-import org.luaj.vm2.LuaNil;
-import org.luaj.vm2.LuaNumber;
-import org.luaj.vm2.LuaString;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaUserdata;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
+import org.luaj.vm2.compiler.LuaC;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -579,6 +569,26 @@ public class BetterCoercionTest {
         Assert.assertEquals(0, pka.getC()); //Field should be hidden!
         Assert.assertTrue(pka.getB().get(0) instanceof FakePojoA);
 
+        Globals gl = JsePlatform.standardGlobals();
+        gl.set("x", x);
+        LuaValue res = gl.load("local t = {} for i,v in pairs(x) do t[#t+1] = i t[#t+1] = v end return t").call();
+        Assert.assertFalse(res.isnil());
+        Set<String> stuff = new HashSet<>();
+        for (int i = 1; i <= res.rawlen(); i++) {
+            stuff.add(res.get(i++).tojstring());
+        }
+        Assert.assertFalse(stuff.isEmpty());
+        Assert.assertTrue(stuff.contains("_a"));
+        Assert.assertTrue(stuff.contains("_b"));
+        Assert.assertTrue(stuff.contains("_c"));
+        Assert.assertTrue(stuff.contains("_d"));
+        Assert.assertTrue(stuff.contains("?fc"));
+        Assert.assertTrue(stuff.contains("?f?c"));
+        Assert.assertTrue(stuff.contains("?fd"));
+        Assert.assertTrue(stuff.contains("?f?a"));
+        Assert.assertTrue(stuff.contains("?m??wait"));
+        Assert.assertTrue(stuff.contains("?m??wait;"));
+        Assert.assertTrue(stuff.contains("?m??wait;J"));
     }
 
     @Test

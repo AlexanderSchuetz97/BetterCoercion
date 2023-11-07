@@ -51,6 +51,10 @@ public class JavaInstance extends AbstractInstance {
 
     protected void initKeyTable() {
         iterationTable = new LuaTable();
+        for (LuaValue key : fieldsTopDown.keySet()) {
+            iterationTable.set(key, LuaValue.TRUE);
+        }
+
         for (LuaValue key : fields.keySet()) {
             iterationTable.set(key, LuaValue.TRUE);
         }
@@ -63,6 +67,9 @@ public class JavaInstance extends AbstractInstance {
 
     @Override
     public Varargs next(LuaValue key) {
+        if (iterationTable == null) {
+            initKeyTable();
+        }
         LuaValue nextKey = iterationTable.next(key).arg1();
         if (nextKey.isnil()) {
             return NIL;
