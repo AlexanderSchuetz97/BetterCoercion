@@ -611,6 +611,324 @@ public class BetterCoercionTest {
         Assert.assertEquals(TestEnum.BC, t3.x);
     }
 
+    @Test
+    public void testManyArguments() {
+        int i = 0;
+        LuaValue lv = LuaType.valueOf(new TManyArgs());
+
+        lv.get("a").invoke(LuaValue.varargsOf(new LuaValue[]{
+            lv,
+            LuaValue.valueOf("a"),
+            LuaValue.valueOf("b"),
+            LuaValue.valueOf("c"),
+            LuaValue.valueOf("d"),
+        }));
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+        })).checkint(1);
+
+        Assert.assertEquals(0, i);
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+                LuaValue.valueOf("f"),
+        })).checkint(1);
+
+        Assert.assertEquals(1, i);
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+                LuaValue.valueOf("f"),
+                LuaValue.valueOf("g"),
+        })).checkint(1);
+
+
+        Assert.assertEquals(2, i);
+
+
+        lv.get("class").get("c").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv.get("class"),
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+        }));
+
+        i = lv.get("class").get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv.get("class"),
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+                LuaValue.valueOf("f"),
+        })).checkint(1);
+
+
+        Assert.assertEquals(1, i);
+
+        i = lv.get("class").get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv.get("class"),
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+                LuaValue.valueOf("f"),
+                LuaValue.valueOf("g"),
+        })).checkint(1);
+
+        Assert.assertEquals(2, i);
+
+        i = lv.get("class").get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv.get("class"),
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+        })).checkint(1);
+        Assert.assertEquals(0, i);
+    }
+
+    @Test
+    public void testVarArgs() {
+        testVarArgsRun(LuaType.valueOf(new TVarArgs()));
+    }
+    @Test
+    public void testVarArgsStatic() {
+        testVarArgsRun(LuaType.valueOf(TVarArgsStatic.class));
+    }
+
+    public void testVarArgsRun(LuaValue lv) {
+        int i = 0;
+
+        i = lv.get("a").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+        })).checkint(1);
+        Assert.assertEquals(0, i);
+
+        i = lv.get("a").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+        })).checkint(1);
+        Assert.assertEquals(1, i);
+
+        i = lv.get("a").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+        })).checkint(1);
+        Assert.assertEquals(2, i);
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+        })).checkint(1);
+        Assert.assertEquals(0, i);
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+        })).checkint(1);
+        Assert.assertEquals(1, i);
+
+        i = lv.get("b").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+        })).checkint(1);
+        Assert.assertEquals(2, i);
+
+        i = lv.get("c").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+        })).checkint(1);
+        Assert.assertEquals(0, i);
+
+        i = lv.get("c").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+        })).checkint(1);
+        Assert.assertEquals(1, i);
+
+        i = lv.get("c").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+        })).checkint(1);
+        Assert.assertEquals(2, i);
+
+        i = lv.get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+        })).checkint(1);
+        Assert.assertEquals(0, i);
+
+        i = lv.get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+        })).checkint(1);
+        Assert.assertEquals(1, i);
+
+        i = lv.get("d").invoke(LuaValue.varargsOf(new LuaValue[]{
+                lv,
+                LuaValue.valueOf("a"),
+                LuaValue.valueOf("b"),
+                LuaValue.valueOf("c"),
+                LuaValue.valueOf("d"),
+                LuaValue.valueOf("e"),
+        })).checkint(1);
+        Assert.assertEquals(2, i);
+    }
+
+    public static class TVarArgsStatic {
+
+        private static void assertStuff(char base, String[] args) {
+            for (int i = 0; i < args.length; i++) {
+                Assert.assertEquals(String.valueOf((char)(base+i)), args[i]);
+            }
+        }
+        public static int a(String... v) {
+            assertStuff('a', v);
+            return v.length;
+        }
+
+        public static int b(String a, String... v) {
+            Assert.assertEquals("a", a);
+            assertStuff('b', v);
+            return v.length;
+        }
+
+        public static int c(String a, String b, String... v) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            assertStuff('c', v);
+            return v.length;
+        }
+
+        public static int d(String a, String b, String c, String... v) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            assertStuff('d', v);
+            return v.length;
+        }
+    }
+
+    public static class TVarArgs {
+
+        private static void assertStuff(char base, String[] args) {
+            for (int i = 0; i < args.length; i++) {
+                Assert.assertEquals(String.valueOf((char)(base+i)), args[i]);
+            }
+        }
+        public int a(String... v) {
+            assertStuff('a', v);
+            return v.length;
+        }
+
+        public int b(String a, String... v) {
+            Assert.assertEquals("a", a);
+            assertStuff('b', v);
+            return v.length;
+        }
+
+        public int c(String a, String b, String... v) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            assertStuff('c', v);
+            return v.length;
+        }
+
+        public int d(String a, String b, String c, String... v) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            assertStuff('d', v);
+            return v.length;
+        }
+    }
+
+    public static class TManyArgs {
+        public void a(String a, String b, String c, String d) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            Assert.assertEquals("d", d);
+        }
+
+        public int b(String a, String b, String c, String d, String e, String...f) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            Assert.assertEquals("d", d);
+            Assert.assertEquals("e", e);
+            if (f.length > 0) {
+                Assert.assertEquals("f", f[0]);
+            }
+
+            if (f.length == 2) {
+                Assert.assertEquals("g", f[1]);
+            }
+
+            return f.length;
+        }
+
+        public static void c(String a, String b, String c, String d) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            Assert.assertEquals("d", d);
+        }
+
+        public static int d(String a, String b, String c, String d, String e, String...f) {
+            Assert.assertEquals("a", a);
+            Assert.assertEquals("b", b);
+            Assert.assertEquals("c", c);
+            Assert.assertEquals("d", d);
+            Assert.assertEquals("e", e);
+            if (f.length > 0) {
+                Assert.assertEquals("f", f[0]);
+            }
+
+
+            if (f.length == 2) {
+                Assert.assertEquals("g", f[1]);
+            }
+
+            return f.length;
+        }
+    }
+
     public static class EnumT3 {
         public TestEnum x;
     }

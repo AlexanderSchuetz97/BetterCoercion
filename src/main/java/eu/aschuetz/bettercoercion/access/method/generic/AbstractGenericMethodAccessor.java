@@ -189,15 +189,17 @@ public abstract class AbstractGenericMethodAccessor<X, T> implements MethodAcces
         Map<Class<?>, Type[]>[] generics = getGenericParameterTypes();
 
         if (isVarArgs()) {
-            Object[] jargs = new Object[Math.max(getArgCount()-1, n)];
-            for (int i = 0; i < paramCoercion.length; i++) {
-                jargs[i] = paramCoercion[i].coerce2J(args.arg(i+1), generics[i]);
+            int actualParameters = n-1;
+            int nonVarargParameters = getArgCount()-1;
+            Object[] jargs = new Object[Math.max(nonVarargParameters, actualParameters)];
+            for (int i = 0; i < paramCoercion.length-1; i++) {
+                jargs[i] = paramCoercion[i].coerce2J(args.arg(i+2), generics[i]);
             }
 
             Map<Class<?>, Type[]> lastType = generics[generics.length -1];
             LuaToJavaCoercion<?> lastCoercion = paramCoercion[paramCoercion.length-1];
-            for (int i = paramCoercion.length; i < n; i++) {
-                jargs[i] = lastCoercion.coerce2J(args.arg(i+1), lastType);
+            for (int i = paramCoercion.length-1; i < jargs.length; i++) {
+                jargs[i] = lastCoercion.coerce2J(args.arg(i+2), lastType);
             }
 
             return coerceResult(args.arg1(), instance, callV(instance, jargs));
@@ -205,7 +207,7 @@ public abstract class AbstractGenericMethodAccessor<X, T> implements MethodAcces
 
         Object[] jargs = new Object[getArgCount()];
         for (int i = 0; i < jargs.length; i++) {
-            jargs[i] = paramCoercion[i].coerce2J(args.arg(i+1), generics[i]);
+            jargs[i] = paramCoercion[i].coerce2J(args.arg(i+2), generics[i]);
         }
 
         return coerceResult(args.arg1(), instance, callV(instance, jargs));
@@ -239,6 +241,9 @@ public abstract class AbstractGenericMethodAccessor<X, T> implements MethodAcces
             case(0):
                 return coerceResult(param1, instance, call0(instance));
             case(1):
+                if (isVarArgs()) {
+                    return coerceResult(param1, instance, call2(instance, paramCoercion[0].coerce2J(param2, generics[0]), paramCoercion[0].coerce2J(param3, generics[0])));
+                }
                 return coerceResult(param1, instance, call1(instance, paramCoercion[0].coerce2J(param2, generics[0])));
             default:
                 return coerceResult(param1, instance, call2(instance, paramCoercion[0].coerce2J(param2, generics[0]), paramCoercion[1].coerce2J(param3, generics[1])));
