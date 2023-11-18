@@ -6,7 +6,7 @@
 
     <groupId>eu.aschuetz</groupId>
     <artifactId>BetterCoercion</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>
