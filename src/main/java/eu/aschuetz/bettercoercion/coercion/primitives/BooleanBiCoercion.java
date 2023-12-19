@@ -71,7 +71,7 @@ public class BooleanBiCoercion implements BiCoercion<Boolean> {
 
     @Override
     public Boolean coerce2J(LuaValue value, Map<Class<?>, Type[]> types) {
-        return value.isnil() ? nullValue : (value.toboolean() ? Boolean.FALSE : Boolean.TRUE);
+        return value.isnil() ? nullValue : (value.toboolean() ? Boolean.TRUE : Boolean.FALSE);
     }
 
     @Override

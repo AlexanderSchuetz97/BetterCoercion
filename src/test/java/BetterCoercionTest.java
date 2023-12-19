@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.luaj.vm2.*;
-import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.util.*;
@@ -609,6 +608,27 @@ public class BetterCoercionTest {
         EnumT3 t3 = new EnumT3();
         LuaType.valueOf(t3).set("x", "bC");
         Assert.assertEquals(TestEnum.BC, t3.x);
+    }
+
+    @Test
+    public void testTrueFalse() {
+        LuaValue x = LuaType.coercion().coerce(new TFTest());
+        x.method("callWithTrue", LuaValue.TRUE);
+        x.method("callWithFalse", LuaValue.FALSE);
+        x.method("callWithTrue", LuaValue.valueOf("abc"));
+        x.method("callWithFalse", LuaValue.NIL);
+
+    }
+
+    public static class TFTest {
+        public void callWithTrue(boolean bool) {
+            Assert.assertTrue(bool);
+        }
+
+
+        public void callWithFalse(boolean bool) {
+            Assert.assertFalse(bool);
+        }
     }
 
     @Test
